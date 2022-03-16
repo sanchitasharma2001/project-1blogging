@@ -5,27 +5,31 @@ const jwt = require("jsonwebtoken")
 //Creation of blogs
 const createBlog = async function (req, res) {
   try {
-    let data = req.body
-    let author_id = req.body.authorId
-
-    if (!author_id) {
-      return res.send("AuthorId is required")
-    }
-    let authorId = await authorModel.findById(author_id)
-    if (!authorId) {
-      return res.send('No author is present with the given id')
-    }
+    let data = req.body;
     if (data) {
-      let savedData = await blogsModel.create(data);
-      res.status(201).send({ msg: savedData, status: true });
-    } else {
-      return res.status(400).send({ msg: "invalid data" });
-    }
-  } catch (error) {
-    return res.status(500).send({ msg: "insert data", status: false });
-  }
+      let author = await authorModel.find({ _id: data.authorId });
+      if (author.length != 0) {
+        let blogCreated = await blogsModel.create(data);
 
-}
+        if (data.isPublished === true) {
+          let mainBlog = await blogsModel.findOneAndUpdate(
+            { _id: blogCreated._id },
+            { $set: { publishedAt: Date.now() } },
+            { new: true }
+          );
+          return res.status(201).send({ msg: mainBlog });
+        }
+        return res.status(201).send({ msg: blogCreated });
+      } else {
+        return res.status(404).send("Author does not exist");
+      }
+    } else {
+      res.status(400).send("BAD REQUEST");
+    }
+  } catch (err) {
+    return res.status(500).send({ ERROR: err.message });
+  }
+};
 
 const loginUser = async function (req, res) {
   let userName = req.body.email;
