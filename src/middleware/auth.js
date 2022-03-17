@@ -18,14 +18,15 @@ let authenticate = async function (req, res, next) {
 
 let authorise = async function (req, res, next) {
   let id = req.params.blogId
+  let id2=req.params.authorId
   let jwtToken = req.headers['x-api-key']
+  
   try {
-    let blogs = await blogModel.findById(id)
-    if (!blogs) return res.status(404).send({ status: false, msg: "please provide valid blog ID" })
-    if (blogs.isDeleted == true) return res.status(404).send({ status: false, msg: "no such blog found" })
+   
 
     let verifiedToken = jwt.verify(jwtToken, "group13")
-    if (verifiedToken.authorId != blogs.authorId) return res.status(403).send({ status: false, msg: "unauthorize access " })
+
+    if (verifiedToken.authorId != id2) return res.status(403).send({ status: false, msg: "unauthorize access " })
 
     next()
   }
@@ -34,9 +35,5 @@ let authorise = async function (req, res, next) {
     res.status(500).send({ msg: "Error", error: err.message })
   }
 }
-
-
-
-
 module.exports.authenticate = authenticate
 module.exports.authorise = authorise

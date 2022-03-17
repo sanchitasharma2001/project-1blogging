@@ -27,7 +27,7 @@ const createBlog = async function (req, res) {
       res.status(400).send("BAD REQUEST");
     }
   } catch (err) {
-    return res.status(500).send({ ERROR: err.message });
+    return res.status(500).send({ "status":false,ERROR: err.message });
   }
 };
 
@@ -55,6 +55,8 @@ const loginUser = async function (req, res) {
 };
 
 //Getting blogs where  isPublished:true isDeleted: false and other combinations
+
+
 const getBlogs = async function (req, res) {
   try {
     let filter = req.query;
@@ -92,19 +94,18 @@ const getBlogs = async function (req, res) {
 }
  
 //Updating blogs
-const updateblog = async function (req, res) {
-  try {
-    let updateblog = req.params.blogId
-    let update = await blogsModel.findById(updateblog)
-    if (!updateblog) {
-      return res.status(404).send({ msg: "Invalid Blog" })
-    }
-    let updatedata = req.body;
-    let updatedUser = await blogsModel.findOneAndUpdate({ _id: updateblog }, { title: updatedata.title, body: updatedata.body, tags: updatedata.tags, subcategory: updatedata.subcategory, isPublished:updatedata.isPublished,isDeleted:updatedata.isDeleted }, { new: true, upsert: true });
-    res.status(200).send({ status: true, data: updatedUser })
-
-  } catch (err) {
-    res.status(500).send({ Error: err.message })
+const updateblog = async function(req,res){
+  try{
+  let updateBlog = req.params.blogId
+  let  = await blogsModel.findById(updateBlog)
+if (!updateBlog) {
+  return res.status(404).send({msg:"Invalid Blog"})
+}
+let updatedata = req.body;
+let updatedUser = await blogsModel.findOneAndUpdate({ _id: updateBlog },{title : updatedata.title, body:updatedata.body, tags : updatedata.tags, subcategory : updatedata.subcategory},{new : true, upsert : true});
+res.status(200).send({ status: true, data: updatedUser })
+}catch(err){
+  res.status(500).send({Error : err.message})
   }
 }
 
@@ -120,7 +121,7 @@ const deleteBlog = async function (req, res) {
     let userDel = await blogsModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true ,deletedAt:new Date()}, { new: true });
     res.status(200).send({ status: true, data: userDel })
   } catch (err) {
-    res.status(500).send({ Error: err.message })
+    res.status(500).send({ status :false,Error: err.message })
   }
 };
 
@@ -132,19 +133,10 @@ const deletebyQuery = async (req, res) => {
     if (fetchdata.length == 0) {
       return res.status(404).send({ "status": false, "msg": "blog not found" })
     }
-
-    for (let i = 0; i < fetchdata.length; i++) {
-      if (fetchdata[i].isDeleted) {
-        return res.status(404).send({ "status": false, "msg": "blog not found" })
-      }
-    }
-
     const dataRes = await blogsModel.updateMany(data, { isDeleted: true, deletedAt: new Date() });
-    return res.status(200).send({ "status": true, "msg": "blog deleted successfully" })
+    return res.status(200).send({ status: true, "msg": "blog deleted successfully" })
   } catch (error) {
-    return res.status(500).send({
-      "error": error.message
-    })
+    return res.status(500).send({status:false,error: error.message})
   }
 }
 
