@@ -1,14 +1,17 @@
 const authorModel = require("../models/authorModel")
-
-const createAuthor = async function (req, res) {
-    try{
-    let data = req.body
-    if(data){
-    let savedData = await authorModel.create(data)
-     return res.status(200).send({ msg: savedData })
+const jwt = require("jsonwebtoken")
+const createAuthor = async function (req,res){
+       try {
+        let data = req.body
+        if(!data){
+          res.status(400).send({status:false, msg:"Bad request"})
+        }else{
+          let savedata  = await authorModel.create(data)
+          res.status(201).send({status:true, msg:savedata})
+        }
+      } catch (error) {
+        res.status(500).send({status:false,  error:error.message})
+      }
     }
-    else{return res.status(400).send({msg:"Bad request"})}
-    }catch(err){return res.status(500).send({Error:err.message})}
-
-}
-module.exports.createAuthor = createAuthor
+    
+    module.exports.createAuthor = createAuthor

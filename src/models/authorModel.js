@@ -11,15 +11,17 @@ const authorSchema = mongoose.Schema({
     },
     title: {
         type: String,
-        enum: ["Mr"," Mrs","Miss"]
+        enum: ["Mr", " Mrs", "Miss"]
     },
     email: {
         type: String,
+        trim: true,
         required: true,
         unique: true,
+        lowercase: true,
         validate(value) {
             if (!validator.isEmail(value)) {
-                throw new error("Email is invalid");
+                throw new Error("Email is invalid");
 
             }
         }
@@ -31,5 +33,4 @@ const authorSchema = mongoose.Schema({
 
 
 }, { timestamps: true })
-module.exports=mongoose.model("authorModel",authorSchema)
-    
+module.exports = mongoose.model("authorModel", authorSchema)

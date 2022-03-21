@@ -2,6 +2,11 @@ const blogsModel = require("../models/blogsModel")
 const authorModel = require("../models/authorModel")
 const jwt = require("jsonwebtoken")
 
+const isValid = function(value){
+  if(typeof value ==undefined || value == null || value.length == 0)return false
+  if(typeof value == "string"&& value.trim().length===0)return false
+}
+//..............................................................................................................................................
 //Creation of blogs
 const createBlog = async function (req, res) {
   try {
@@ -31,6 +36,8 @@ const createBlog = async function (req, res) {
   }
 };
 
+//.................................................................................................................................................
+//Login user
 const loginUser = async function (req, res) {
   let userName = req.body.email;
   let password = req.body.password;
@@ -54,9 +61,8 @@ const loginUser = async function (req, res) {
   res.send({ status: true, data: token });
 };
 
+//...................................................................................................................
 //Getting blogs where  isPublished:true isDeleted: false and other combinations
-
-
 const getBlogs = async function (req, res) {
   try {
     let filter = req.query;
@@ -92,23 +98,25 @@ const getBlogs = async function (req, res) {
     return res.status(500).send({ msg: "Error", error: error.message })
   }
 }
- 
+
+//...........................................................................................................................................................................................................
 //Updating blogs
 const updateblog = async function(req,res){
-  try{
-  let updateBlog = req.params.blogId
-  let  = await blogsModel.findById(updateBlog)
-if (!updateBlog) {
-  return res.status(404).send({msg:"Invalid Blog"})
-}
-let updatedata = req.body;
-let updatedUser = await blogsModel.findOneAndUpdate({ _id: updateBlog },{title : updatedata.title, body:updatedata.body, tags : updatedata.tags, subcategory : updatedata.subcategory},{new : true, upsert : true});
-res.status(200).send({ status: true, data: updatedUser })
-}catch(err){
-  res.status(500).send({Error : err.message})
-  }
-}
+      try{
+      let updateBlog = req.params.blogId
+      let  = await blogsModel.findById(updateBlog)
+    if (!updateBlog) {
+      return res.status(404).send({msg:"Invalid Blog"})
+    }
+    let updatedata = req.body;
+    let updatedUser = await blogsModel.findOneAndUpdate({ _id: updateBlog },{title : updatedata.title, body:updatedata.body, tags : updatedata.tags, subcategory : updatedata.subcategory},{new : true, upsert : true});
+    res.status(200).send({ status: true, data: updatedUser })
+    }catch(err){
+      res.status(500).send({Error : err.message})
+      }
+    }
 
+//....................................................................................................................................................................
 //Deleting the blogs by Id
 const deleteBlog = async function (req, res) {
   try {
@@ -125,6 +133,7 @@ const deleteBlog = async function (req, res) {
   }
 };
 
+//.....................................................................................................................................................................
 //Deleting the blogs by queries.
 const deletebyQuery = async (req, res) => {
  try {
@@ -139,6 +148,7 @@ const deletebyQuery = async (req, res) => {
     return res.status(500).send({status:false,error: error.message})
   }
 }
+
 
 
 module.exports.createBlog = createBlog

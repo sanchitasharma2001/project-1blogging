@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
-const validator = require("validator")
 const ObjectId = mongoose.Schema.Types.ObjectId
+const validator = require("validator")
+
 const blogSchema = mongoose.Schema({
     title: {
         type: String,
@@ -16,28 +17,28 @@ const blogSchema = mongoose.Schema({
         ref: 'authorModel'
     },
     tags: [String],
-    category: [String],
+
+    category: {
+        type: [String],
+        required: true
+    },
     subcategory: [String],
+
     isPublished: {
         type: Boolean,
-        default:false
+        default: false
     },
-
     publishedAt: {
-        type:Date
-        
-    },
+        type: Date
 
+    },
     isDeleted: {
         type: Boolean,
         default: false
     },
     deletedAt: {
-        type:Date
-
+        type: Date
     },
-
-
 
 }, { timestamps: true })
 module.exports = mongoose.model("blogsModel", blogSchema)
